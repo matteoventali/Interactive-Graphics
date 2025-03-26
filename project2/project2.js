@@ -1,3 +1,4 @@
+// Matteo Ventali (1985026)
 // Returns a 3x3 transformation matrix as an array of 9 values in column-major order.
 // The transformation first applies scale, then rotation, and finally translation.
 // The given rotation value is in degrees.
