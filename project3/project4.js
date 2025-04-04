@@ -48,19 +48,24 @@ class MeshDrawer
 		
 		// Get the ids of the uniform variables in the shaders
 		this.mvp = gl.getUniformLocation( this.prog, 'mvp' );
+		this.matInversion = gl.getUniformLocation( this.prog, 'matInversion' );
+		this.sampler = gl.getUniformLocation( this.prog, 'tex' );
+		this.flagTex = gl.getUniformLocation( this.prog, 'flagTex' );
 		
 		// Get the ids of the vertex attributes in the shaders
 		this.vertPos = gl.getAttribLocation( this.prog, 'pos' );
+		this.txc = gl.getAttribLocation( this.prog, 'txc' );
 
-		// Get the ids of the vertex attributes in the shaders
-		this.matInversion = gl.getUniformLocation( this.prog, 'matInversion' );
-		
 		// Vertex buffer of WebGL
 		this.vertbuffer = gl.createBuffer();
+		this.texcoords = gl.createBuffer();
 
 		// Inversion matrix
 		this.mat = Array(1, 0, 0, 0, 	0, 1, 0, 0, 	0, 0, 1, 0, 	0, 0, 0, 1);
-		
+
+		// Texture creation
+		this.mytex = gl.createTexture();
+
 	}
 	
 	// This method is called every time the user opens an OBJ file.
@@ -79,6 +84,9 @@ class MeshDrawer
 		this.numTriangles = vertPos.length / 3;
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertbuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertPos), gl.STATIC_DRAW);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.texcoords);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
 	}
 	
 	// This method is called when the user changes the state of the
@@ -105,9 +113,15 @@ class MeshDrawer
 		gl.useProgram( this.prog );
 		gl.uniformMatrix4fv( this.mvp, false, trans );
 		gl.uniformMatrix4fv( this.matInversion, false, this.mat);
+		
 		gl.bindBuffer( gl.ARRAY_BUFFER, this.vertbuffer );
 		gl.vertexAttribPointer( this.vertPos, 3, gl.FLOAT, false, 0, 0 );
 		gl.enableVertexAttribArray( this.vertPos );
+		
+		gl.bindBuffer( gl.ARRAY_BUFFER, this.texcoords );
+		gl.vertexAttribPointer( this.txc, 2, gl.FLOAT, false, 0, 0 );
+		gl.enableVertexAttribArray( this.txc );
+		
 		gl.drawArrays( gl.TRIANGLES, 0, this.numTriangles );
 	}
 	
@@ -115,13 +129,22 @@ class MeshDrawer
 	// The argument is an HTML IMG element containing the texture data.
 	setTexture( img )
 	{
-		// [TO-DO] Bind the texture
-
+		// [IMPLEMENTED] Bind the texture
+		gl.activeTexture( gl.TEXTURE0 );
+		gl.bindTexture(gl.TEXTURE_2D, this.mytex);
+		
 		// You can set the texture image data using the following command.
 		gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img );
+		gl.generateMipmap(gl.TEXTURE_2D);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
-		// [TO-DO] Now that we have a texture, it might be a good idea to set
+		// [IMPLEMENTED] Now that we have a texture, it might be a good idea to set
 		// some uniform parameter(s) of the fragment shader, so that it uses the texture.
+		gl.useProgram(this.prog);
+		gl.uniform1i(this.sampler, 0);
+		gl.uniform1i(this.flagTex, true);
 	}
 	
 	// This method is called when the user changes the state of the
@@ -129,26 +152,42 @@ class MeshDrawer
 	// The argument is a boolean that indicates if the checkbox is checked.
 	showTexture( show )
 	{
-		// [TO-DO] set the uniform parameter(s) of the fragment shader to specify if it should use the texture.
+		// [IMPLEMENTED] set the uniform parameter(s) of the fragment shader to specify if it should use the texture.
+		gl.useProgram(this.prog);
+		if ( show )
+			gl.uniform1i(this.flagTex, true);
+		else
+			gl.uniform1i(this.flagTex, false);
 	}
-	
 }
 
 // Vertex shader source code
 var meshVS = `
 	attribute vec3 pos;
+	attribute vec2 txc;
 	uniform mat4 mvp;
 	uniform mat4 matInversion;
+	varying vec2 texCoord;
+	uniform bool flagTex;
+
 	void main()
 	{
 		gl_Position = mvp * matInversion * vec4(pos,1);
+		texCoord = txc;
 	}
 `;
 // Fragment shader source code
 var meshFS = `
 	precision mediump float;
+	varying vec2 texCoord;
+	uniform bool flagTex;
+	uniform sampler2D tex;
+
 	void main()
 	{
-		gl_FragColor = vec4(1,gl_FragCoord.z*gl_FragCoord.z,0,1);
+		if (flagTex)
+			gl_FragColor = texture2D( tex, texCoord );
+		else
+			gl_FragColor = vec4(1,gl_FragCoord.z*gl_FragCoord.z,0,1);
 	}
 `;
