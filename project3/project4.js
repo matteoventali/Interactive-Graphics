@@ -65,7 +65,6 @@ class MeshDrawer
 
 		// Texture creation
 		this.mytex = gl.createTexture();
-
 	}
 	
 	// This method is called every time the user opens an OBJ file.
