@@ -168,7 +168,7 @@ var meshVS = `
 	uniform mat4 mvp;
 	uniform mat4 matInversion;
 	varying vec2 texCoord;
-	uniform bool flagTex;
+	
 
 	void main()
 	{
