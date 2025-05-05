@@ -5,3 +5,4 @@ In this repository there are the following projects:
 - project2 :arrow_right: transformations project;
 - project3 :arrow_right: triangular meshes project;
 - project4 :arrow_right: shading project;
+- project5 :arrow_right: ray-tracing project;
