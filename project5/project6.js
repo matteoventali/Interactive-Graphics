@@ -121,7 +121,7 @@ vec4 RayTracer( Ray ray )
 			if ( IntersectRay( h, r ) ) {
 				// [IMPLEMENTED]: Hit found, so shade the hit point
 				view = normalize( -r.dir );
-				clr += Shade( h.mtl, h.position, h.normal, view );
+				clr += Shade( h.mtl, h.position, h.normal, view ) * k_s;
 
 				// [IMPLEMENTED]: Update the loop variables for tracing the next reflection ray
 				k_s *= h.mtl.k_s;	// update the specular coefficient
