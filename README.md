@@ -6,3 +6,4 @@ In this repository there are the following projects:
 - project3 :arrow_right: triangular meshes project;
 - project4 :arrow_right: shading project;
 - project5 :arrow_right: ray-tracing project;
+- project6 :arrow_right: animations project.
