@@ -4,26 +4,76 @@
 // You can use the MatrixMult function defined in project5.html to multiply two 4x4 matrices in the same format.
 function GetModelViewMatrix( translationX, translationY, translationZ, rotationX, rotationY )
 {
-	// [TO-DO] Modify the code below to form the transformation matrix.
+	// [IMPLEMENTED]
+	
 	var trans = [
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		translationX, translationY, translationZ, 1
 	];
-	var mv = trans;
+
+	// Rotation matrix x and y
+	var rotX = [
+		1, 0, 0, 0,
+		0, Math.cos(rotationX), Math.sin(rotationX), 0,
+		0, -Math.sin(rotationX), Math.cos(rotationX), 0,
+		0, 0, 0, 1
+	];
+
+	var rotY = [
+		Math.cos(rotationY), 0, -Math.sin(rotationY), 0,
+		0, 1, 0, 0,
+		Math.sin(rotationY), 0, Math.cos(rotationY), 0,
+		0, 0, 0, 1
+	];
+
+	var resRot = MatrixMult(rotX, rotY);
+	var mv = MatrixMult(trans, resRot);
+	
 	return mv;
 }
 
 
-// [TO-DO] Complete the implementation of the following class.
+// [IMPLEMENTED] Complete the implementation of the following class.
 
 class MeshDrawer
 {
 	// The constructor is a good place for taking care of the necessary initializations.
 	constructor()
 	{
-		// [TO-DO] initializations
+		// Compile the shader program
+		this.prog = InitShaderProgram( meshVS, meshFS );
+		
+		// Get the ids of the uniform variables in the shaders
+		this.mvp = gl.getUniformLocation( this.prog, 'mvp' );
+		this.matInversion = gl.getUniformLocation( this.prog, 'matInversion' );
+		this.sampler = gl.getUniformLocation( this.prog, 'tex' );
+		this.flagTex = gl.getUniformLocation( this.prog, 'flagTex' );
+		this.lightDirection = gl.getUniformLocation ( this.prog, 'lightDirection' );
+		this.alpha = gl.getUniformLocation( this.prog, 'alpha' );
+		
+		// Get the ids of the vertex attributes in the shaders
+		this.vertPos = gl.getAttribLocation( this.prog, 'pos' );
+		this.txc = gl.getAttribLocation( this.prog, 'txc' );
+		this.norm = gl.getAttribLocation( this.prog, 'norm' );
+
+		// Vertex buffer of WebGL
+		this.vertbuffer = gl.createBuffer();
+		this.texcoords = gl.createBuffer();
+
+		// Normal buffer of WebGL
+		this.normbuffer = gl.createBuffer();
+
+		// Inversion matrix
+		this.mat = Array(1, 0, 0, 0, 	0, 1, 0, 0, 	0, 0, 1, 0, 	0, 0, 0, 1);
+
+		// Model view and normal matrixes 
+		this.mv = gl.getUniformLocation( this.prog, 'mv' );
+		this.normalMatrix = gl.getUniformLocation( this.prog, 'normalMatrix' );
+
+		// Texture creation
+		this.mytex = gl.createTexture();
 	}
 	
 	// This method is called every time the user opens an OBJ file.
@@ -39,7 +89,16 @@ class MeshDrawer
 	// Note that this method can be called multiple times.
 	setMesh( vertPos, texCoords, normals )
 	{
-		// [TO-DO] Update the contents of the vertex buffer objects.
+		// [IMPLEMENTED] Update the contents of the vertex buffer objects.
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertbuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertPos), gl.STATIC_DRAW);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.texcoords);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.normbuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+
 		this.numTriangles = vertPos.length / 3;
 	}
 	
@@ -48,7 +107,14 @@ class MeshDrawer
 	// The argument is a boolean that indicates if the checkbox is checked.
 	swapYZ( swap )
 	{
-		// [TO-DO] Set the uniform parameter(s) of the vertex shader
+		gl.useProgram( this.prog );
+		
+		// [IMPLEMENTED] Set the uniform parameter(s) of the vertex shader
+		if ( swap )
+			// Apply the inversion transformation
+			this.mat = Array(1, 0, 0, 0, 	0, 0, 1, 0, 	0, 1, 0, 0, 	0, 0, 0, 1);
+		else
+			this.mat = Array(1, 0, 0, 0, 	0, 1, 0, 0, 	0, 0, 1, 0, 	0, 0, 0, 1);
 	}
 	
 	// This method is called to draw the triangular mesh.
@@ -58,7 +124,24 @@ class MeshDrawer
 	// transformation matrix, which is the inverse-transpose of matrixMV.
 	draw( matrixMVP, matrixMV, matrixNormal )
 	{
-		// [TO-DO] Complete the WebGL initializations before drawing
+		// [IMPLEMENTED] Complete the WebGL initializations before drawing
+		gl.useProgram( this.prog );
+		gl.uniformMatrix4fv( this.mvp, false, matrixMVP );
+		gl.uniformMatrix4fv( this.matInversion, false, this.mat);
+		gl.uniformMatrix4fv( this.mv, false, matrixMV );
+		gl.uniformMatrix3fv( this.normalMatrix, false, matrixNormal);
+		
+		gl.bindBuffer( gl.ARRAY_BUFFER, this.vertbuffer );
+		gl.vertexAttribPointer( this.vertPos, 3, gl.FLOAT, false, 0, 0 );
+		gl.enableVertexAttribArray( this.vertPos );
+		
+		gl.bindBuffer( gl.ARRAY_BUFFER, this.texcoords );
+		gl.vertexAttribPointer( this.txc, 2, gl.FLOAT, false, 0, 0 );
+		gl.enableVertexAttribArray( this.txc );
+		
+		gl.bindBuffer( gl.ARRAY_BUFFER, this.normbuffer );
+		gl.vertexAttribPointer( this.norm, 3, gl.FLOAT, false, 0, 0 );
+		gl.enableVertexAttribArray( this.norm );
 
 		gl.drawArrays( gl.TRIANGLES, 0, this.numTriangles );
 	}
@@ -67,13 +150,22 @@ class MeshDrawer
 	// The argument is an HTML IMG element containing the texture data.
 	setTexture( img )
 	{
-		// [TO-DO] Bind the texture
-
+		// [IMPLEMENTED] Bind the texture
+		gl.activeTexture( gl.TEXTURE0 );
+		gl.bindTexture(gl.TEXTURE_2D, this.mytex);
+		
 		// You can set the texture image data using the following command.
 		gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img );
+		gl.generateMipmap(gl.TEXTURE_2D);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
-		// [TO-DO] Now that we have a texture, it might be a good idea to set
+		// [IMPLEMENTED] Now that we have a texture, it might be a good idea to set
 		// some uniform parameter(s) of the fragment shader, so that it uses the texture.
+		gl.useProgram(this.prog);
+		gl.uniform1i(this.sampler, 0);
+		gl.uniform1i(this.flagTex, true);
 	}
 	
 	// This method is called when the user changes the state of the
@@ -81,19 +173,28 @@ class MeshDrawer
 	// The argument is a boolean that indicates if the checkbox is checked.
 	showTexture( show )
 	{
-		// [TO-DO] set the uniform parameter(s) of the fragment shader to specify if it should use the texture.
+		// [IMPLEMENTED] set the uniform parameter(s) of the fragment shader to specify if it should use the texture.
+		gl.useProgram(this.prog);
+		if ( show )
+			gl.uniform1i(this.flagTex, true);
+		else
+			gl.uniform1i(this.flagTex, false);
 	}
 	
 	// This method is called to set the incoming light direction
 	setLightDir( x, y, z )
 	{
-		// [TO-DO] set the uniform parameter(s) of the fragment shader to specify the light direction.
+		// [IMPLEMENTED] set the uniform parameter(s) of the fragment shader to specify the light direction.
+		gl.useProgram(this.prog);
+		gl.uniform3f(this.lightDirection, x, y, z);
 	}
 	
 	// This method is called to set the shininess of the material
 	setShininess( shininess )
 	{
-		// [TO-DO] set the uniform parameter(s) of the fragment shader to specify the shininess.
+		// [IMPLEMENTED] set the uniform parameter(s) of the fragment shader to specify the shininess.
+		gl.useProgram(this.prog);
+		gl.uniform1f(this.alpha, shininess);
 	}
 }
 
@@ -112,4 +213,63 @@ function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, pa
 	// [TO-DO] Handle collisions
 	
 }
+
+// Vertex shader source code
+var meshVS = `
+	attribute vec3 pos;
+	attribute vec2 txc;
+	attribute vec3 norm;
+	uniform mat4 mvp;
+	uniform mat4 matInversion;
+	uniform mat4 mv;
+	uniform mat3 normalMatrix;
+	
+	varying vec2 texCoord;
+	varying vec3 normal;
+	varying vec4 position;
+
+	void main()
+	{
+		gl_Position = mvp * matInversion * vec4(pos,1);
+		texCoord = txc;
+		normal = normalMatrix * norm;
+		position = mv * vec4(pos,1);
+	}
+`;
+
+// Fragment shader source code
+var meshFS = `
+	precision mediump float;
+	varying vec2 texCoord;
+	uniform bool flagTex;
+	uniform sampler2D tex;
+	uniform vec3 lightDirection;
+	uniform float alpha;
+
+	varying vec3 normal;
+	varying vec4 position;
+
+	void main()
+	{
+		// Color of the object
+		vec4 diffuse;
+		vec4 specular = vec4(1,1,1,1);
+	
+		// Evaluating if texture must be applied
+		if (flagTex)
+			diffuse = texture2D( tex, texCoord );
+		else
+			diffuse = vec4(1,1,1,1);
+
+		// Calculating the h vector
+		vec3 h = normalize(normalize(lightDirection) + (-normalize(position).xyz));
+		
+		// Calculating the diffuse and specular component
+		// We fix the light intensity as 1 
+		diffuse = diffuse * max(0.0, dot(normalize(normal), normalize(lightDirection)));
+		specular = specular * max(0.0, pow(dot(normalize(normal), h), alpha));
+		
+		gl_FragColor = diffuse + specular;
+	}
+`;
 
