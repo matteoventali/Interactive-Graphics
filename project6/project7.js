@@ -204,14 +204,77 @@ class MeshDrawer
 // It updates the given positions and velocities.
 function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, particleMass, gravity, restitution )
 {
-	var forces = Array( positions.length ); // The total for per particle
-
+	//var forces = Array( positions.length ); // The total for per particle
+	var forces = [];
+    for (let i = 0; i < positions.length; i++) {
+        forces.push(new Vec3(0,0,0));
+    }
+	
 	// [TO-DO] Compute the total force of each particle
+	for (i = 0; i < springs.length; i++)
+	{
+		// Distance and direction vector of the spring force between two particles
+		l = positions[springs[i].p1].sub(positions[springs[i].p0]).len();
+		d = positions[springs[i].p1].sub(positions[springs[i].p0]).div(l);
+
+		// Spring forces
+		f0s = d.mul((l - springs[i].rest)*stiffness);
+		f1s = d.mul((springs[i].rest - l)*stiffness);
+
+		// Updating forces
+		forces[springs[i].p0] = forces[springs[i].p0].add(f0s);
+		forces[springs[i].p1] = forces[springs[i].p1].add(f1s);
+
+		// Damping forces
+		ldot = velocities[springs[i].p1].sub(velocities[springs[i].p0]).dot(d);
+		f0d = d.mul(ldot*damping);
+		f1d = d.mul(-ldot*damping);
+
+		// Updating forces
+		forces[springs[i].p0] = forces[springs[i].p0].add(f0d);
+		forces[springs[i].p1] = forces[springs[i].p1].add(f1d);
+	}
+
+	// Gravity forces
+	for ( i = 0; i < positions.length; i++)
+		forces[i] = forces[i].add(gravity.mul(particleMass));
 	
-	// [TO-DO] Update positions and velocities
+	// [IMPLEMENTED] Update positions and velocities
+	for ( i = 0; i < positions.length; i++)
+	{
+		// New acceleration and velocity
+		a = forces[i].div(particleMass);
+		velocities[i] = velocities[i].add(a.mul(dt));
+
+		// New position
+		positions[i] = positions[i].add(velocities[i].mul(dt));
+	}
 	
-	// [TO-DO] Handle collisions
-	
+	// [IMPLEMENTED] Handle collisions
+	for ( i = 0; i < positions.length; i++)
+	{
+		// Check if the particle exceed the limits of the box
+		// on all the 3 axes
+		if ( positions[i].x < -1 || positions[i].x > 1 )
+		{
+			// Reflect the velocity
+			velocities[i].x = -restitution * velocities[i].x;
+			positions[i].x = Math.max(-1, Math.min(1, positions[i].x));
+		}
+		if ( positions[i].y < -1 || positions[i].y > 1 )
+		{
+			// Reflect the velocity
+			velocities[i].y = -restitution * velocities[i].y;
+			positions[i].y = Math.max(-1, Math.min(1, positions[i].y));
+		}
+		if ( positions[i].z < -1 || positions[i].z > 1 )
+		{
+			// Reflect the velocity
+			velocities[i].z = -restitution * velocities[i].z;
+			positions[i].z = Math.max(-1, Math.min(1, positions[i].z));
+		}
+	}
+
 }
 
 // Vertex shader source code
