@@ -204,13 +204,13 @@ class MeshDrawer
 // It updates the given positions and velocities.
 function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, particleMass, gravity, restitution )
 {
-	//var forces = Array( positions.length ); // The total for per particle
-	var forces = [];
+	var forces = Array( positions.length ).fill(new Vec3(0,0,0)); // The total for per particle
+	/*var forces = [];
     for (let i = 0; i < positions.length; i++) {
         forces.push(new Vec3(0,0,0));
-    }
+    }*/
 	
-	// [TO-DO] Compute the total force of each particle
+	// [IMPLEMENTED] Compute the total force of each particle
 	for (i = 0; i < springs.length; i++)
 	{
 		// Distance and direction vector of the spring force between two particles
