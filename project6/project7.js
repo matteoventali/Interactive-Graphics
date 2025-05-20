@@ -205,13 +205,9 @@ class MeshDrawer
 function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, particleMass, gravity, restitution )
 {
 	var forces = Array( positions.length ).fill(new Vec3(0,0,0)); // The total for per particle
-	/*var forces = [];
-    for (let i = 0; i < positions.length; i++) {
-        forces.push(new Vec3(0,0,0));
-    }*/
 	
 	// [IMPLEMENTED] Compute the total force of each particle
-	for (i = 0; i < springs.length; i++)
+	for ( i = 0; i < springs.length; i++ )
 	{
 		// Distance and direction vector of the spring force between two particles
 		l = positions[springs[i].p1].sub(positions[springs[i].p0]).len();
@@ -236,22 +232,26 @@ function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, pa
 	}
 
 	// Gravity forces
-	for ( i = 0; i < positions.length; i++)
+	for ( i = 0; i < positions.length; i++ )
 		forces[i] = forces[i].add(gravity.mul(particleMass));
 	
 	// [IMPLEMENTED] Update positions and velocities
-	for ( i = 0; i < positions.length; i++)
+	// (only when the vertex is not manually selected)
+	for ( i = 0; i < positions.length; i++ )
 	{
-		// New acceleration and velocity
-		a = forces[i].div(particleMass);
-		velocities[i] = velocities[i].add(a.mul(dt));
+		if ( !(massSpring.selVert == i) )
+		{
+			// New acceleration and velocity
+			a = forces[i].div(particleMass);
+			velocities[i] = velocities[i].add(a.mul(dt));
 
-		// New position
-		positions[i] = positions[i].add(velocities[i].mul(dt));
+			// New position
+			positions[i] = positions[i].add(velocities[i].mul(dt));
+		}
 	}
 	
 	// [IMPLEMENTED] Handle collisions
-	for ( i = 0; i < positions.length; i++)
+	for ( i = 0; i < positions.length; i++ )
 	{
 		// Check if the particle exceed the limits of the box
 		// on all the 3 axes
@@ -274,7 +274,6 @@ function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, pa
 			positions[i].z = Math.max(-1, Math.min(1, positions[i].z));
 		}
 	}
-
 }
 
 // Vertex shader source code
