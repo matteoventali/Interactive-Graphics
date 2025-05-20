@@ -248,7 +248,6 @@ function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, pa
 
 		// New position
 		positions[i].inc(velocities[i].mul(dt));
-	
 	}
 	
 	// [IMPLEMENTED] Handle collisions
