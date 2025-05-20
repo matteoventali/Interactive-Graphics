@@ -204,7 +204,11 @@ class MeshDrawer
 // It updates the given positions and velocities.
 function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, particleMass, gravity, restitution )
 {
-	var forces = Array( positions.length ).fill(new Vec3(0,0,0)); // The total for per particle
+	var forces = Array( positions.length );//.fill(new Vec3(0,0,0)); // The total for per particle
+	
+	// Initialize the forces to zero
+	for ( i = 0; i < positions.length; i++ )
+		forces[i] = new Vec3(0,0,0);
 	
 	// [IMPLEMENTED] Compute the total force of each particle
 	for ( i = 0; i < springs.length; i++ )
@@ -218,8 +222,8 @@ function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, pa
 		f1s = d.mul((springs[i].rest - l)*stiffness);
 
 		// Updating forces
-		forces[springs[i].p0] = forces[springs[i].p0].add(f0s);
-		forces[springs[i].p1] = forces[springs[i].p1].add(f1s);
+		forces[springs[i].p0].inc(f0s);
+		forces[springs[i].p1].inc(f1s);
 
 		// Damping forces
 		ldot = velocities[springs[i].p1].sub(velocities[springs[i].p0]).dot(d);
@@ -227,13 +231,14 @@ function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, pa
 		f1d = d.mul(-ldot*damping);
 
 		// Updating forces
-		forces[springs[i].p0] = forces[springs[i].p0].add(f0d);
-		forces[springs[i].p1] = forces[springs[i].p1].add(f1d);
+		forces[springs[i].p0].inc(f0d)
+		forces[springs[i].p1].inc(f1d)
 	}
 
 	// Gravity forces
 	for ( i = 0; i < positions.length; i++ )
-		forces[i] = forces[i].add(gravity.mul(particleMass));
+		//forces[i] = forces[i].add(gravity.mul(particleMass));
+		forces[i].inc(gravity.mul(particleMass));
 	
 	// [IMPLEMENTED] Update positions and velocities
 	for ( i = 0; i < positions.length; i++ )
