@@ -204,7 +204,7 @@ class MeshDrawer
 // It updates the given positions and velocities.
 function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, particleMass, gravity, restitution )
 {
-	var forces = Array( positions.length );//.fill(new Vec3(0,0,0)); // The total for per particle
+	var forces = Array( positions.length ); // The total for per particle
 	
 	// Initialize the forces to zero
 	for ( i = 0; i < positions.length; i++ )
@@ -237,7 +237,6 @@ function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, pa
 
 	// Gravity forces
 	for ( i = 0; i < positions.length; i++ )
-		//forces[i] = forces[i].add(gravity.mul(particleMass));
 		forces[i].inc(gravity.mul(particleMass));
 	
 	// [IMPLEMENTED] Update positions and velocities
