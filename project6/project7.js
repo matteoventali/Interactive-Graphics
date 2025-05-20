@@ -236,18 +236,15 @@ function SimTimeStep( dt, positions, velocities, springs, stiffness, damping, pa
 		forces[i] = forces[i].add(gravity.mul(particleMass));
 	
 	// [IMPLEMENTED] Update positions and velocities
-	// (only when the vertex is not manually selected)
 	for ( i = 0; i < positions.length; i++ )
 	{
-		if ( !(massSpring.selVert == i) )
-		{
-			// New acceleration and velocity
-			a = forces[i].div(particleMass);
-			velocities[i] = velocities[i].add(a.mul(dt));
+		// New acceleration and velocity
+		a = forces[i].div(particleMass);
+		velocities[i].inc(a.mul(dt))
 
-			// New position
-			positions[i] = positions[i].add(velocities[i].mul(dt));
-		}
+		// New position
+		positions[i].inc(velocities[i].mul(dt));
+	
 	}
 	
 	// [IMPLEMENTED] Handle collisions
