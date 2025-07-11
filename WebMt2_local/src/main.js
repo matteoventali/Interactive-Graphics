@@ -1,4 +1,3 @@
-// Importa Three.js
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
