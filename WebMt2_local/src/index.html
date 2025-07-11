@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>WebMt2</title>
+    <link rel="icon" type="image/x-icon" href="./textures/icon.png">
+    <link rel="stylesheet" type="text/css" href="src/style_hud.css">
+    <script type="module" src="./src/config.js"></script>
+    <script>
+        function game_over() 
+        {
+            const overlay = document.getElementById('game-over-overlay');
+            if (overlay) 
+            {
+                overlay.style.display = 'flex';
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.transition = 'opacity 0.5s ease';
+                    overlay.style.opacity = '1';
+                }, 50);
+            }
+        }
+
+        function victory() 
+        {
+            const overlay = document.getElementById('victory-overlay');
+            if (overlay) 
+            {
+                overlay.style.display = 'flex';
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.transition = 'opacity 0.5s ease';
+                    overlay.style.opacity = '1';
+                }, 50);
+            }
+        }
+
+        function show_rain_slider()
+        {
+            const div = document.getElementById('rainControl');
+            div.style.display = 'block';
+        }
+
+        function hide_rain_slider()
+        {
+            const div = document.getElementById('rainControl');
+            div.style.display = 'none';
+        }
+
+        window.win = victory;
+        window.game_over = game_over;
+        window.show_rain_slider = show_rain_slider;
+        window.hide_rain_slider = hide_rain_slider;
+    </script>
+</head>
+<body>
+    <div id="messageDialog" class="div" style="visibility: hidden; right: 20px; top: 20px;">
+    </div>
+    
+    <div id="playerStats" class="div" style="position: fixed; left: 20px; top: 20px;">
+        <div style="display: flex; align-items: center; gap: 8px; justify-content: space-between;">
+            <span id="life_value" style="display: none;"></span>
+            <span>HP</span>
+            <div id="player-health-bar">
+                <div id="player-health-green"></div>
+                <div id="player-health-red"></div>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; justify-content: space-between;">
+            <span id="stm_value" style="display: none;"></span>
+            <span>STM</span>
+            <div id="player-stm-bar">
+                <div id="player-stm-green"></div>
+                <div id="player-stm-red"></div>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; justify-content: space-between;">
+            <span id="shield_value" style="display: none;"></span>
+            <span>SHD</span>
+            <div id="player-shield-bar">
+                <div id="player-shield-purple"></div>
+                <div id="player-shield-black"></div>
+            </div>
+        </div>
+        <div id="ability_stats" style="display: none; align-items: center; gap: 8px; justify-content: space-between;">
+            <span id="ability_value" style="display: none;"></span>
+            <span>SPA</span>
+            <div id="player-ability-bar">
+                <div id="player-ability-gold"></div>
+                <div id="player-ability-black"></div>
+            </div>
+        </div>
+        <p class="stat-row" name="atk">
+            <span>ATTACK</span>
+            <span id="atk_value"></span>
+        </p>
+        <p class="stat-row" name="int">
+            <span>INTELLIGENCE</span>
+            <span id="int_value"></span>
+        </p>
+        <p class="stat-row" name="key">
+            <span>KEY</span>
+            <span id="key_value"></span>
+        </p>
+        <p class="stat-row" name="coin">
+            <span>COIN</span>
+            <span id="coin_value"></span>
+        </p>
+        <p id="msgStats"></p>
+    </div>
+
+    <div id="metinLife" class="div" style="visibility: hidden; right: 20px; bottom: 20px;">
+        <div id="metin-health-bar">
+            <div id="metin-health-green"></div>
+            <div id="metin-health-red"></div>
+        </div>
+    </div>
+
+    <div class="div" style="left:20px; bottom: 20px;">
+        <canvas id="minimapCanvas" width="200" height="200" 
+                style="display: block; border: 2px solid white; border-radius: 50%; margin-top: 10px;">
+        </canvas>
+        
+        <div id="inventory"  current_number=0 style="visibility: hidden; text-align: center;">
+            <p>INVENTORY</p>
+            <p style="display: none;">[4] SPECIAL ABILITY</p>
+        </div>
+    </div>
+
+    <!-- Side panel HUD -->
+    <div id="sidePanel">
+        <div id="toggleArrow">&#x25C0;</div>
+
+        <div id="legend">
+            <h4>Minimap legend</h4>
+            <p>&#x1F535; Tent position</p>
+            <p>&#x1F534; Monster position</p>
+            <p>&#x1F7E1; Metin position</p>
+            <p>&#x1F7E0; Metin already hit</p>
+        </div>
+
+        <button id="toggleShadows">Shadows</button>
+
+        <div id="rainControl" style="display:none;">
+            <label for="rainIntensity"><strong>Rain intensity</strong></label>
+            <input type="range" id="rainIntensity" min="0" max="100" value="50">
+            <span id="rainValue">50</span>
+        </div>
+    </div>
+
+    <script type="module" src="./src/utility.js"></script>
+    <script type="module" src="./src/main.js"></script>
+
+    <!-- Starting overlay -->
+    <div id="start-overlay">
+        <div id="start-content">
+            <h1>WebMt2</h1>
+            <button id="start-button">Start game</button>
+        </div>
+    </div>
+
+    <!-- Game over overlay -->
+    <div id="game-over-overlay" style="display: none;">
+        <div id="game-over-content">
+            <h1>Game Over</h1>
+            <button type="button" id="restart-button">Restart</button>
+        </div>
+    </div>
+
+    <!-- Win overvaly -->
+    <div id="victory-overlay" style="display: none;">
+    <div id="victory-content">
+        <h1>You win!</h1>
+        <button type="button" id="victory-button">Restart</button>
+    </div>
+    </div>
+
+    <script>
+        // Code to handle side panel in the page
+        const panel = document.getElementById("sidePanel");
+        const arrow = document.getElementById("toggleArrow");
+        const toggleShadowsBtn = document.getElementById("toggleShadows");
+
+        let shadowsEnabled = true;
+
+        arrow.addEventListener("click", () => {
+            panel.classList.toggle("open");
+            arrow.classList.toggle("open");
+
+            // Change arrow to show in the HUD
+            arrow.innerHTML = panel.classList.contains("open") ? "&#x25B6;" : "&#x25C0;";
+        });
+
+        toggleShadowsBtn.addEventListener("click", () => {
+            // Change shadow modality in the game
+            if (typeof window.manage_shadow === 'function') window.manage_shadow();
+        });
+    </script>
+
+    <script>
+        document.getElementById('restart-button').addEventListener('click', () => {
+            // Restart the game
+            location.reload();
+        });
+
+        document.getElementById('victory-button').addEventListener('click', () => {
+            // Restart the game
+            location.reload();
+        });
+
+        document.getElementById('start-button').addEventListener('click', () => {
+            const overlay = document.getElementById('start-overlay');
+            overlay.style.transition = "opacity 0.5s ease";
+            overlay.style.opacity = "0";
+            setTimeout(() => overlay.remove(), 500);
+
+            if (typeof window.start_game === 'function') window.start_game();
+        });
+
+        document.getElementById('rainIntensity').addEventListener('input', () =>{
+            const rainSlider = document.getElementById('rainIntensity');
+            const rainValueDisplay = document.getElementById('rainValue');
+
+            if (typeof window.change_rain_parameters === 'function') window.change_rain_parameters(parseInt(rainSlider.value));
+            rainValueDisplay.textContent = rainSlider.value;
+        });
+    </script>
+</body>
+</html>

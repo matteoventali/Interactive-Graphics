@@ -1,0 +1,380 @@
+body { margin: 0; overflow: hidden; }
+canvas { display: block; }
+.div
+{
+    position: fixed;
+    max-width: 300px;
+    padding: 12px 16px;
+    background: linear-gradient(to bottom, rgba(30, 30, 30, 0.9), rgba(10, 10, 10, 0.95));
+    border: 3px solid gold;
+    border-radius: 12px;
+    color: #fff8c6;
+    font-family: Helvetica, Arial sans-serif;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 5px rgba(0, 0, 0, 0.7) inset;
+    z-index: 9999;
+}
+
+#metin-health-bar {
+    width: 150px;
+    height: 12px;
+    display: flex;
+    border: 1px solid #555;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: black;
+}
+
+#metin-health-green {
+    height: 100%;
+    background-color: rgb(19, 218, 19);
+    transition: width 0.2s ease;
+}
+
+#metin-health-red {
+    height: 100%;
+    background-color: darkred;
+    transition: width 0.2s ease;
+}
+
+#player-health-bar {
+    width: 120px; 
+    height: 10px;
+    display: flex;
+    border: 1px solid #555;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: black;
+}
+
+#player-health-green {
+    height: 100%;
+    background-color: rgb(19, 218, 19);
+    transition: width 0.2s ease;
+    width: 100%;
+}
+
+#player-health-red {
+    height: 100%;
+    background-color: darkred;
+    transition: width 0.2s ease;
+    width: 0%;
+}
+
+#player-stm-bar {
+    width: 120px; 
+    height: 10px;
+    display: flex;
+    border: 1px solid #555;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: black;
+}
+
+#player-stm-green {
+    height: 100%;
+    background-color: rgb(32, 148, 190);
+    transition: width 0.2s ease;
+    width: 100%;
+}
+
+#player-stm-red {
+    height: 100%;
+    background-color: darkred;
+    transition: width 0.2s ease;
+    width: 0%;
+}
+
+#playerStats > div {
+    margin-bottom: 12px;
+}
+
+#playerStats p {
+    margin: 10px 0 0 0;
+}
+
+#start-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+    color: #fff8c6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    flex-direction: column;
+    font-family: Helvetica, Arial sans-serif;
+}
+
+#start-content {
+    text-align: center;
+    animation: fadeIn 1.2s ease;
+}
+
+#start-content h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px gold;
+}
+
+#start-button {
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    background-color: gold;
+    color: black;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 10px gold;
+}
+
+#start-button:hover {
+    background-color: #ffe966;
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+#game-over-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+    color: #fff8c6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    flex-direction: column;
+    font-family: Helvetica, Arial sans-serif;
+}
+
+#game-over-content {
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+#game-over-content h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: darkred;
+}
+
+#restart-button {
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    background-color: gold;
+    color: black;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 10px gold;
+}
+
+#restart-button:hover {
+    background-color: #ffe966;
+    transform: scale(1.05);
+}
+
+#victory-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1e1e1e 0%, #000000 100%);
+    color: #fff8c6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    flex-direction: column;
+    font-family: Helvetica, Arial sans-serif;
+}
+
+#victory-content {
+    text-align: center;
+    animation: fadeIn 1.2s ease;
+}
+
+#victory-content h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: gold;
+    text-shadow: 0 0 15px gold;
+}
+
+#victory-button {
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    background-color: gold;
+    color: black;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 10px gold;
+}
+
+#victory-button:hover {
+    background-color: #ffe966;
+    transform: scale(1.05);
+}
+
+#sidePanel {
+    position: fixed;
+    right: -250px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    background: linear-gradient(to bottom, rgba(30, 30, 30, 0.9), rgba(10, 10, 10, 0.95));
+    color: #fff8c6;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    border: 3px solid gold;
+    border-radius: 10px 0 0 10px;
+    padding: 15px 15px 15px 35px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 5px rgba(0, 0, 0, 0.7) inset;
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow: visible;
+}
+
+#sidePanel.open {
+    right: 0;
+}
+
+#toggleArrow {
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(60, 60, 60, 0.9), rgba(20, 20, 20, 0.95));
+    border: 2px solid gold;
+    color: #fff8c6;
+    font-size: 18px;
+    text-align: center;
+    line-height: 38px;
+    border-radius: 5px 0 0 5px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+#toggleShadows {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    background-color: gold;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 6px gold;
+    margin-top: 10px;
+    width: 100%;
+}
+
+#toggleShadows:hover {
+    background-color: #ffe966;
+    transform: scale(1.03);
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+#rainControl {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #fff8c6;
+}
+
+#rainControl label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+#rainControl input[type="range"] {
+    width: 100%;
+    accent-color: gold;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    outline: none;
+    margin-bottom: 6px;
+    height: 6px;
+}
+
+#rainControl .stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+#player-shield-bar {
+    width: 120px;
+    height: 10px;
+    display: flex;
+    border: 1px solid #555;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: black;
+    margin-top: 4px;
+}
+
+#player-shield-purple {
+    height: 100%;
+    background-color: rgb(124, 93, 220);
+    transition: width 0.2s ease;
+    width: 100%;
+}
+
+#player-shield-black {
+    height: 100%;
+    background-color: black;
+    transition: width 0.2s ease;
+    width: 0%;
+}
+
+#player-ability-bar {
+    width: 120px;
+    height: 10px;
+    display: flex;
+    border: 1px solid #555;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: black;
+    margin-top: 4px;
+}
+
+#player-ability-gold {
+    height: 100%;
+    background-color: #dabc12;
+    transition: width 0.2s ease;
+    width: 100%;
+}
+
+#player-ability-black {
+    height: 100%;
+    background-color: black;
+    transition: width 0.2s ease;
+    width: 0%;
+}
