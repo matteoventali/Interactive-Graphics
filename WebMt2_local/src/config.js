@@ -55,7 +55,7 @@ export var init_stamina = 100;
 export var init_shield = 100;
 export var init_coin = 0;
 export var init_int = 0;
-export var init_key = 1;
+export var init_key = 0;
 
 export var map_dimension = 200;
 export var physical_map_dimension = 400;
