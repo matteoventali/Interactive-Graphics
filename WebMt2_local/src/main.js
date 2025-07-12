@@ -48,7 +48,7 @@ let watched_item, watching_item_animation = false;
 let mob_model, mob_texture, mob_flag = false, mob_texture_flag = false;
 let spell_model, spell_model_flag = false;
 let blood_texture, blood_texture_flag = false, blood_overlay, blood_visible_flag = false;
-let spawned_mob = []; let spell_casted = []; let solid_objects = [];
+let spawned_mob = []; let spell_casted = []; let solid_objects = []; let collected_keys = [];
 let metins = []; let spawned_coins = []; let spawned_keys = []; let spawned_trees = []; let items = [];
 let inventory = []; let fragments = []; let metin_toBeDestroyed = [];
 let to_beCleaned = []; let cleaning_terminated = false;
@@ -247,7 +247,7 @@ function animate()
     const delta = clock.getDelta();
 
     // Blocking vertical position of the player
-    controls.object.position.y = 1.6;
+    controls.getObject().position.y = 1.6;
     check_game_over();
 
     switch (status_game)
@@ -340,16 +340,16 @@ function handle_input(delta)
     if (direction.length() > 0)
     {
         direction.normalize();
-        let moveDirection = direction.applyQuaternion(controls.object.quaternion);
+        let moveDirection = direction.applyQuaternion(controls.getObject().quaternion);
         moveDirection.y = 0; // The player is blocked on the ground
 
         // Check that the new position doesn't exceed from the map limits and is valid
-        let currentPosition = controls.object.position.clone();
+        let currentPosition = controls.getObject().position.clone();
         let nextPosition = currentPosition.clone().addScaledVector(moveDirection, speed * delta);
 
         // Updating the position
         if ( can_move_to(nextPosition) )
-            controls.object.position.copy(nextPosition);
+            controls.getObject().position.copy(nextPosition);
     }
     
     // If the player is trying to collect a coin
@@ -389,7 +389,7 @@ function init_eventListeners()
 {
     // Visual mouse control
     controls = new PointerLockControls(camera, document.body);
-    scene.add(controls.object);
+    scene.add(controls.getObject());
     document.addEventListener('keydown', (event) => {
         if ( event.code === "KeyQ" )
         {
@@ -562,7 +562,7 @@ function check_limit_map(delta)
             if ( timer_outside > 5 )
             {
                 // Here we report the player at the origin
-                controls.object.position.set(0, 30, 0);
+                controls.getObject().position.set(0, 30, 0);
                 timer_outside_started = false;
                 timer_outside = 0;
                 camera.startHeight = 10;
@@ -1538,6 +1538,7 @@ function animate_cleaning(delta)
         spawned_mob = [];
         spawned_coins = [];
         spawned_keys = [];
+        collected_keys = [];
     }
 }
 
@@ -3086,7 +3087,7 @@ function spawn_reward(position)
     // Here we drop a key:
     // - with probability p if no key has already spawned
     // - if all metin are destroyed.
-    if ( (r < CONFIG.probability_key || metins.length == 0 ) && spawned_keys.length == 0) 
+    if ( (r < CONFIG.probability_key || metins.length == 0 ) && collected_keys.length == 0) 
         spawn_new_key(position);
     else // Here we drop the coin
         spawn_new_coin(position);
@@ -3399,7 +3400,8 @@ function finalize_collect_key()
     if ( target_key )
     {
         scene.remove(target_key);
-        // spawned_keys = spawned_keys.filter(c => c !== target_key); // Remove from the array
+        spawned_keys = spawned_keys.filter(c => c !== target_key); // Remove from the array
+        collected_keys.push(target_key);
         target_key = undefined; // Reset the target key
         DM.clearMessageDialog();
 
