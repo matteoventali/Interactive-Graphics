@@ -3087,7 +3087,7 @@ function spawn_reward(position)
     // Here we drop a key:
     // - with probability p if no key has already spawned
     // - if all metin are destroyed.
-    if ( (r < CONFIG.probability_key || metins.length == 0 ) && collected_keys.length == 0) 
+    if ( (r < CONFIG.probability_key || metins.length == 0 ) && (collected_keys.length + spawned_keys.length) == 0) 
         spawn_new_key(position);
     else // Here we drop the coin
         spawn_new_coin(position);
