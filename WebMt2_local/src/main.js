@@ -247,7 +247,7 @@ function animate()
     const delta = clock.getDelta();
 
     // Blocking vertical position of the player
-    controls.getObject().position.y = 1.6;
+    controls.object.position.y = 1.6;
     check_game_over();
 
     switch (status_game)
@@ -340,16 +340,16 @@ function handle_input(delta)
     if (direction.length() > 0)
     {
         direction.normalize();
-        let moveDirection = direction.applyQuaternion(controls.getObject().quaternion);
+        let moveDirection = direction.applyQuaternion(controls.object.quaternion);
         moveDirection.y = 0; // The player is blocked on the ground
 
         // Check that the new position doesn't exceed from the map limits and is valid
-        let currentPosition = controls.getObject().position.clone();
+        let currentPosition = controls.object.position.clone();
         let nextPosition = currentPosition.clone().addScaledVector(moveDirection, speed * delta);
 
         // Updating the position
         if ( can_move_to(nextPosition) )
-            controls.getObject().position.copy(nextPosition);
+            controls.object.position.copy(nextPosition);
     }
     
     // If the player is trying to collect a coin
@@ -389,7 +389,7 @@ function init_eventListeners()
 {
     // Visual mouse control
     controls = new PointerLockControls(camera, document.body);
-    scene.add(controls.getObject());
+    scene.add(controls.object);
     document.addEventListener('keydown', (event) => {
         if ( event.code === "KeyQ" )
         {
@@ -562,7 +562,7 @@ function check_limit_map(delta)
             if ( timer_outside > 5 )
             {
                 // Here we report the player at the origin
-                controls.getObject().position.set(0, 30, 0);
+                controls.object.position.set(0, 30, 0);
                 timer_outside_started = false;
                 timer_outside = 0;
                 camera.startHeight = 10;
