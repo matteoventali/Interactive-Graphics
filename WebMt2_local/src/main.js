@@ -2349,8 +2349,7 @@ function check_hit_defense(spell)
     const cm = camera.position.clone(); cm.y = 0;
     camera.getWorldDirection(camera_direction);
 
-    // Computing the direction and the distance, and checking that 
-    // the distance is not too high
+    // Computing the direction from the camera to the spell
     const to_spell = new THREE.Vector3().subVectors(spell.position, cm);
     to_spell.y = cm.y;
     
