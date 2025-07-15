@@ -4143,7 +4143,7 @@ function animate_pre_explosion_monster(delta)
             create_fragment_explosion(monster.userData.original_position);
 
             // If the monster is a guardian we have to remove the rock associated
-            // Remove also the roeating rock if necessary
+            // Remove also the rotating rock if necessary
             if ( monster.userData.rotatingRocks )
             {
                 for ( const r of monster.userData.rotatingRocks )
