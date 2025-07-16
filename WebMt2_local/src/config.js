@@ -67,7 +67,7 @@ export const sword_stats = [
         name_inv: "bamboo sword",
         base_atk : 20,
         intelligence_required : 0,
-        intelligence_special_ability : 2,
+        intelligence_special_ability : 1,
         duration_special_ability : 10,
         cooldown_special_ability : 15,
         color_trail1 : 0x0ffff,

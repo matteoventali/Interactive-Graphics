@@ -1554,7 +1554,18 @@ function reinit_map()
         status_game = "playing";
     }
     else if ( CONFIG.current_level == 3 )
+    {
         init_final_level();
+        
+        // Respawning the player into the last level
+        camera.position.set(0,0,0);
+        camera.lookAt(0,0,-1);
+        camera.startHeight = 10;
+        camera.gravity = -9.81;
+        camera.is_falling = true;
+        camera.falling_time = 0;
+    }
+        
     
     // Reactivating the player's control
     control_keyboard = true;
@@ -4769,7 +4780,7 @@ function animate_rain(delta)
             const x = (Math.random() - 0.5) * CONFIG.map_dimension;
             const z = (Math.random() - 0.5) * CONFIG.map_dimension;
             const y = Math.random() * 50;
-
+            
             // Setting the position of the startpoints
             positions[i * 6]     = x;
             positions[i * 6 + 1] = y;
